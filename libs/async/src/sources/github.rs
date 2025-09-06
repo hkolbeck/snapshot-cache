@@ -3,7 +3,7 @@ pub use octocrab::Octocrab;
 use std::io::Cursor;
 use async_trait::async_trait;
 
-use mirror_cache_core::util::{Error, Result};
+use snapshot_cache_core::util::{Error, Result};
 
 use crate::sources::sources::ConfigSource;
 

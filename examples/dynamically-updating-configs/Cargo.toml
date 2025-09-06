@@ -5,6 +5,6 @@ edition = "2021"
 publish = false
 
 [dependencies]
-mirror-cache = { path = "../..", features = ["sync", "github"]}
+snapshot-cache = { path = "../..", features = ["sync", "github"]}
 
 arc-swap = "1.6.0"

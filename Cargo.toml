@@ -1,25 +1,25 @@
 [package]
-name = "mirror-cache"
+name = "snapshot-cache"
 version = "0.1.0"
 edition = "2021"
 
-[dependencies.mirror-cache-core]
+[dependencies.snapshot-cache-core]
 path = "libs/core"
 
-[dependencies.mirror-cache-async]
+[dependencies.snapshot-cache-async]
 path = "libs/async"
 optional = true
 
-[dependencies.mirror-cache-sync]
+[dependencies.snapshot-cache-sync]
 path = "libs/sync"
 optional = true
 
 [features]
 default = []
-sync = ["dep:mirror-cache-sync"]
-async = ["dep:mirror-cache-async"]
+sync = ["dep:snapshot-cache-sync"]
+async = ["dep:snapshot-cache-async"]
 
 # Config source features
-github = ["mirror-cache-sync?/github", "mirror-cache-async?/github"]
-http = ["mirror-cache-sync?/http", "mirror-cache-async?/http"]
-s3 = ["mirror-cache-sync?/s3", "mirror-cache-async?/s3"]
+github = ["snapshot-cache-sync?/github", "snapshot-cache-async?/github"]
+http = ["snapshot-cache-sync?/http", "snapshot-cache-async?/http"]
+s3 = ["snapshot-cache-sync?/s3", "snapshot-cache-async?/s3"]

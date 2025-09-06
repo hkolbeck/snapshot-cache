@@ -2,7 +2,7 @@ pub use reqwest::{Client, Response};
 
 use async_trait::async_trait;
 use reqwest::StatusCode;
-use mirror_cache_core::util::{Error, Result};
+use snapshot_cache_core::util::{Error, Result};
 use crate::sources::sources::ConfigSource;
 
 pub struct HttpConfigSource {

@@ -5,11 +5,11 @@ use std::time::Duration;
 
 use arc_swap::ArcSwap;
 
-use mirror_cache::mirror_cache_core::collections::UpdatingObject;
-use mirror_cache::mirror_cache_core::processors::RawConfigProcessor;
-use mirror_cache::mirror_cache_core::util::{Fallback, FieldUpdate, Result};
-use mirror_cache::mirror_cache_sync::cache::MirrorCache;
-use mirror_cache::mirror_cache_sync::sources::github::{GitHubConfigSource, Octocrab};
+use snapshot_cache::snapshot_cache_core::collections::UpdatingObject;
+use snapshot_cache::snapshot_cache_core::processors::RawConfigProcessor;
+use snapshot_cache::snapshot_cache_core::util::{Fallback, FieldUpdate, Result};
+use snapshot_cache::snapshot_cache_sync::cache::SnapshotCache;
+use snapshot_cache::snapshot_cache_sync::sources::github::{GitHubConfigSource, Octocrab};
 
 /**
  * This example highlights how arbitrary objects can be refreshed, including configs.
@@ -58,7 +58,7 @@ fn main() {
         "file-path",
     ).unwrap();
 
-    let cache = MirrorCache::<UpdatingObject<String, Config>>::object_builder()
+    let cache = SnapshotCache::<UpdatingObject<String, Config>>::object_builder()
         .with_source(source)
         .with_processor(GHConfigParser)
         .with_fetch_interval(Duration::from_secs(10))

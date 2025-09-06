@@ -13,7 +13,7 @@ fn main() {
 
     let processor = RawLineMapProcessor::new(parse_line);
 
-    let cache = MirrorCache::<UpdatingMap<String, String, i32>>::map_builder()
+    let cache = SnapshotCache::<UpdatingMap<String, String, i32>>::map_builder()
         // These are required.
         .with_source(source)
         .with_processor(processor)

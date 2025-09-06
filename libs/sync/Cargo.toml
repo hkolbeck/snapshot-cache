@@ -1,10 +1,10 @@
 [package]
-name = "mirror-cache-sync"
+name = "snapshot-cache-sync"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-mirror-cache-core = { path = "../core" }
+snapshot-cache-core = { path = "../core" }
 
 scheduled-thread-pool = "^0.2.7"
 chrono = "^0.4.26"

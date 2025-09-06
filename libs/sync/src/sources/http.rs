@@ -1,6 +1,6 @@
 pub use reqwest::blocking::{Client, Response};
 
-use mirror_cache_core::util::{Error, Result};
+use snapshot_cache_core::util::{Error, Result};
 
 use crate::sources::sources::ConfigSource;
 

@@ -7,23 +7,23 @@ use std::time::{Duration, Instant, SystemTime};
 
 use arc_swap::ArcSwap;
 use chrono::DateTime;
-use mirror_cache_core::collections::{UpdatingMap, UpdatingObject, UpdatingSet};
-use mirror_cache_core::metrics::Metrics;
-use mirror_cache_core::processors::RawConfigProcessor;
-use mirror_cache_core::util::{Absent, Error, FailureFn, FallbackFn, Holder, Result, UpdateFn};
+use snapshot_cache_core::collections::{UpdatingMap, UpdatingObject, UpdatingSet};
+use snapshot_cache_core::metrics::Metrics;
+use snapshot_cache_core::processors::RawConfigProcessor;
+use snapshot_cache_core::util::{Absent, Error, FailureFn, FallbackFn, Holder, Result, UpdateFn};
 use tokio::{task, time};
 use tokio::task::JoinHandle;
 
 use crate::sources::sources::ConfigSource;
 
-pub struct MirrorCache<O> {
+pub struct SnapshotCache<O> {
     collection: Arc<O>,
 
     #[allow(dead_code)]
     join_handle: JoinHandle<()>,
 }
 
-impl<O: 'static> MirrorCache<O> {
+impl<O: 'static> SnapshotCache<O> {
     #[allow(clippy::too_many_arguments)]
     async fn construct_and_start<
         T: Send + Sync + 'static,
@@ -44,7 +44,7 @@ impl<O: 'static> MirrorCache<O> {
         maybe_metrics: Option<M>,
         fallback: Option<A>,
         constructor: fn(Holder<E, T>) -> O,
-    ) -> Result<MirrorCache<O>> {
+    ) -> Result<SnapshotCache<O>> {
         let holder: Holder<E, T> = Arc::new(ArcSwap::new(Arc::new(None)));
         let metrics = maybe_metrics.map(Arc::new);
         let updater =
@@ -92,7 +92,7 @@ impl<O: 'static> MirrorCache<O> {
             fetch_loop(holder, updater, interval, on_update, on_failure)
         );
 
-        Ok(MirrorCache {
+        Ok(SnapshotCache {
             collection,
             join_handle: forever,
         })
@@ -379,7 +379,7 @@ impl<
         }
     }
 
-    pub async fn build(self) -> Result<MirrorCache<O>> {
+    pub async fn build(self) -> Result<SnapshotCache<O>> {
         if self.config_source.is_none() {
             return Err(Error::new("No config source specified"));
         }
@@ -392,7 +392,7 @@ impl<
             return Err(Error::new("No  fetch interval specified"));
         }
 
-        MirrorCache::construct_and_start(
+        SnapshotCache::construct_and_start(
             self.config_source.unwrap(),
             self.config_processor.unwrap(),
             self.fetch_interval.unwrap().into(),

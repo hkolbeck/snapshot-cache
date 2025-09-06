@@ -7,22 +7,22 @@ use std::time::{Duration, Instant, SystemTime};
 
 use arc_swap::ArcSwap;
 use chrono::DateTime;
-use mirror_cache_core::collections::{UpdatingMap, UpdatingObject, UpdatingSet};
-use mirror_cache_core::metrics::Metrics;
-use mirror_cache_core::processors::RawConfigProcessor;
-use mirror_cache_core::util::{Absent, Error, FailureFn, FallbackFn, Holder, Result, UpdateFn};
+use snapshot_cache_core::collections::{UpdatingMap, UpdatingObject, UpdatingSet};
+use snapshot_cache_core::metrics::Metrics;
+use snapshot_cache_core::processors::RawConfigProcessor;
+use snapshot_cache_core::util::{Absent, Error, FailureFn, FallbackFn, Holder, Result, UpdateFn};
 use scheduled_thread_pool::ScheduledThreadPool;
 
 use crate::sources::sources::ConfigSource;
 
-pub struct MirrorCache<O> {
+pub struct SnapshotCache<O> {
     cache: Arc<O>,
 
     #[allow(dead_code)]
     scheduler: ScheduledThreadPool,
 }
 
-impl<O: 'static> MirrorCache<O> {
+impl<O: 'static> SnapshotCache<O> {
     #[allow(clippy::too_many_arguments)]
     fn construct_and_start<
         T: Send + Sync + 'static,
@@ -38,10 +38,10 @@ impl<O: 'static> MirrorCache<O> {
         name: Option<String>, source: C, processor: P, interval: Duration,
         on_update: Option<U>, on_failure: Option<F>, mut metrics: Option<M>,
         fallback: Option<A>, constructor: fn(Holder<E, T>) -> O,
-    ) -> Result<MirrorCache<O>> {
+    ) -> Result<SnapshotCache<O>> {
         let holder: Holder<E, T> = Arc::new(ArcSwap::new(Arc::new(None)));
         let update_fn =
-            MirrorCache::<O>::get_update_fn(holder.clone(), source, processor);
+            SnapshotCache::<O>::get_update_fn(holder.clone(), source, processor);
         let initial_fetch = update_fn(metrics.as_mut());
 
         match initial_fetch.as_ref() {
@@ -109,7 +109,7 @@ impl<O: 'static> MirrorCache<O> {
             }
         });
 
-        Ok(MirrorCache {
+        Ok(SnapshotCache {
             cache,
             scheduler,
         })
@@ -338,7 +338,7 @@ impl<
         }
     }
 
-    pub fn build(self) -> Result<MirrorCache<O>> {
+    pub fn build(self) -> Result<SnapshotCache<O>> {
         if self.config_source.is_none() {
             return Err(Error::new("No config source specified"));
         }
@@ -351,7 +351,7 @@ impl<
             return Err(Error::new("No  fetch interval specified"));
         }
 
-        MirrorCache::construct_and_start(
+        SnapshotCache::construct_and_start(
             self.name,
             self.config_source.unwrap(),
             self.config_processor.unwrap(),

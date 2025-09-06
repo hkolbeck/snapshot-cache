@@ -5,7 +5,7 @@ use std::io::Cursor;
 use tokio::runtime::Runtime;
 use crate::sources::sources::ConfigSource;
 
-use mirror_cache_core::util::{Error, Result};
+use snapshot_cache_core::util::{Error, Result};
 
 pub struct GitHubConfigSource {
     client: Octocrab,

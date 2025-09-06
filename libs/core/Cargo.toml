@@ -1,5 +1,5 @@
 [package]
-name = "mirror-cache-core"
+name = "snapshot-cache-core"
 version = "0.1.0"
 edition = "2021"
 

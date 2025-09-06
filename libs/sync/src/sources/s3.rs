@@ -3,7 +3,7 @@ pub use aws_sdk_s3::Client;
 use aws_sdk_s3::primitives::{ByteStream, DateTime};
 use aws_smithy_http::result::SdkError;
 use tokio::runtime::Runtime;
-use mirror_cache_core::util::Result;
+use snapshot_cache_core::util::Result;
 use crate::sources::sources::ConfigSource;
 
 pub struct S3ConfigSource {

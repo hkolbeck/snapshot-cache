@@ -1,4 +1,4 @@
-Mirror Cache
+Snapshot Cache
 ============
 
 ### Status: Polishing 
@@ -31,9 +31,9 @@ Usage
 =====
 
 Cache instances are constructed using a builder, which is retrieved by calling one of
-* `MirrorCache::<UpdatingMap<$Version, $Key, $Value>>::map_builder()`,
-* `MirrorCache::<UpdatingSet<$Version, $Value>>::set_builder()`, or
-* `MirrorCache::<UpdatingObject<$Version, $Value>>::object_builder()`
+* `SnapshotCache::<UpdatingMap<$Version, $Key, $Value>>::map_builder()`,
+* `SnapshotCache::<UpdatingSet<$Version, $Value>>::set_builder()`, or
+* `SnapshotCache::<UpdatingObject<$Version, $Value>>::object_builder()`
   
 Depending on the desired collection type. Code won't compile if required fields are unset.
 See the appropriate section below for more details on each of the builder functions.
@@ -43,7 +43,7 @@ fn main() -> FullDatasetCache<UpdatingMap<K, V>> {
     let source = LocalFileConfigSource::new("my.config");
     let processor = RawLineMapProcessor::new(|line| { /* Parsing! */ });
 
-    MirrorCache::<UpdatingMap<VersionType, KeyType, ValueType>>::map_builder()
+    SnapshotCache::<UpdatingMap<VersionType, KeyType, ValueType>>::map_builder()
         // These are required. Failing to specify any of these will cause type-checker errors.
         .with_source(source)
         .with_processor(processor)

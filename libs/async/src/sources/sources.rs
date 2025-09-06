@@ -4,7 +4,7 @@ use std::path::Path;
 use std::time::UNIX_EPOCH;
 use async_trait::async_trait;
 
-use mirror_cache_core::util::Result;
+use snapshot_cache_core::util::Result;
 
 #[async_trait]
 pub trait ConfigSource<E, S> {
