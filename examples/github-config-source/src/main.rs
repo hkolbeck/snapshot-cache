@@ -1,15 +1,29 @@
+use std::collections::HashMap;
+use std::str::FromStr;
+use std::thread::sleep;
+use std::time::Duration;
+
+use chrono::{DateTime, Utc};
+
+use snapshot_cache::snapshot_cache_core::collections::UpdatingMap;
+use snapshot_cache::snapshot_cache_core::metrics::Metrics;
+use snapshot_cache::snapshot_cache_core::util::{Error, Result};
+
+use snapshot_cache::Fallback;
+use snapshot_cache::RawLineMapProcessor;
+use snapshot_cache::SnapshotCache;
+use snapshot_cache::snapshot_cache_core::util::{OnFailure, OnUpdate};
+use snapshot_cache::snapshot_cache_sync::sources::github::{GitHubConfigSource, Octocrab};
+
 fn main() {
     let octocrab = Octocrab::builder()
         .personal_token(std::env::var("GITHUB_TOKEN").expect("No Github token specified!"))
-        .build().unwrap();
+        .build()
+        .unwrap();
 
-    let source = GitHubConfigSource::new(
-        octocrab,
-        "repo-owner",
-        "repo-name",
-        "branch",
-        "file-path",
-    ).unwrap();
+    let source =
+        GitHubConfigSource::new(octocrab, "repo-owner", "repo-name", "branch", "file-path")
+            .unwrap();
 
     let processor = RawLineMapProcessor::new(parse_line);
 
@@ -21,16 +35,20 @@ fn main() {
         // These are optional
         .with_name("my-cache")
         .with_fallback(Fallback::with_value(HashMap::new()))
-        .with_update_callback(
-            OnUpdate::with_fn(
-                |_, v, _|
-                    println!("Updated to version {}", v.clone().unwrap_or_else(|| String::from("None")))))
-        .with_failure_callback(
-            OnFailure::with_fn(|e, _| println!("Failed with error: {}", e)))
+        .with_update_callback(OnUpdate::with_fn(|_, v, _| {
+            println!(
+                "Updated to version {}",
+                v.clone().unwrap_or_else(|| String::from("None"))
+            )
+        }))
+        .with_failure_callback(OnFailure::with_fn(|e, _| {
+            println!("Failed with error: {}", e)
+        }))
         .with_metrics(ExampleMetrics {})
-        .build().unwrap();
+        .build()
+        .unwrap();
 
-    let map = cache.get_collection();
+    let map = cache.cache();
     loop {
         println!("C={}", map.get(&String::from("C")).unwrap_or_default());
         sleep(Duration::from_secs(3));
@@ -53,7 +71,11 @@ struct ExampleMetrics {}
 
 impl Metrics<String> for ExampleMetrics {
     fn update(&self, _new_version: &Option<String>, fetch_time: Duration, process_time: Duration) {
-        println!("Update fetch took {}ms and process took {}ms", fetch_time.as_millis(), process_time.as_millis());
+        println!(
+            "Update fetch took {}ms and process took {}ms",
+            fetch_time.as_millis(),
+            process_time.as_millis()
+        );
     }
 
     fn last_successful_update(&self, ts: &DateTime<Utc>) {
