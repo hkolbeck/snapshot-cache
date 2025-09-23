@@ -1,8 +1,9 @@
 [package]
-name = "example-local"
+name = "local-file-config-source"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 publish = false
 
 [dependencies]
+chrono = "^0.4.42"
 snapshot-cache = { path = "../..", features = ["sync"]}

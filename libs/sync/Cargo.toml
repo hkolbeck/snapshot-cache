@@ -1,21 +1,24 @@
 [package]
 name = "snapshot-cache-sync"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 snapshot-cache-core = { path = "../core" }
 
 scheduled-thread-pool = "^0.2.7"
-chrono = "^0.4.26"
-url = "^2.3.0"
-arc-swap = "^1.6.0"
 
-octocrab = { version = "^0.19.0", optional = true }
-reqwest = { version = "^0.11.18", features = ["blocking"], optional = true }
-aws-sdk-s3 = { version = "^0.28.0", optional = true }
-aws-smithy-http = { version = "^0.55.3", optional = true }
-tokio = { version = "^1.28.2", features = ["rt-multi-thread"], optional = true }
+chrono = "^0.4.42"
+tokio = { version = "^1.47.1", features = ["rt-multi-thread"], optional = true }
+async-trait = "^0.1.89"
+url = "^2.5.7"
+arc-swap = "^1.7.1"
+
+octocrab = { version = "^0.45.0", optional = true }
+reqwest = {version = "^0.12.23", optional = true}
+aws-sdk-s3 = { version = "^1.106.0", optional = true}
+aws-smithy-http = { version = "^0.62.3", optional = true }
+
 
 [features]
 default = []
