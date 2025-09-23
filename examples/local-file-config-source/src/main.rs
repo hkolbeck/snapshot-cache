@@ -1,3 +1,20 @@
+use std::collections::HashMap;
+use std::str::FromStr;
+use std::thread::sleep;
+use std::time::Duration;
+
+use chrono::{DateTime, Utc};
+
+use snapshot_cache::snapshot_cache_core::collections::UpdatingMap;
+use snapshot_cache::snapshot_cache_core::metrics::Metrics;
+use snapshot_cache::snapshot_cache_core::util::{Error, Result};
+
+use snapshot_cache::snapshot_cache_core::util::{OnFailure, OnUpdate};
+use snapshot_cache::Fallback;
+use snapshot_cache::LocalFileConfigSource;
+use snapshot_cache::RawLineMapProcessor;
+use snapshot_cache::SnapshotCache;
+
 fn main() {
     let source = LocalFileConfigSource::new("./my.config");
     let processor = RawLineMapProcessor::new(parse_line);
@@ -10,13 +27,18 @@ fn main() {
         // These are optional
         .with_name("my-cache")
         .with_fallback(Fallback::with_value(HashMap::new()))
-        .with_update_callback(OnUpdate::with_fn(|_, v, _| println!("Updated to version {}", v.unwrap_or(0))))
-        .with_failure_callback(OnFailure::with_fn(|e, _| println!("Failed with error: {}", e)))
+        .with_update_callback(OnUpdate::with_fn(|_, v, _| {
+            println!("Updated to version {}", v.unwrap_or(0))
+        }))
+        .with_failure_callback(OnFailure::with_fn(|e, _| {
+            println!("Failed with error: {}", e)
+        }))
         .with_metrics(ExampleMetrics {})
-        .build().unwrap();
+        .build()
+        .unwrap();
 
     // Collection instances are safe to hold on to, borrow, clone, or pass ownership of.
-    let map = cache.get_collection();
+    let map = cache.cache();
     loop {
         println!("C={}", map.get(&String::from("C")).unwrap_or_default());
         sleep(Duration::from_secs(3));
@@ -39,7 +61,11 @@ struct ExampleMetrics {}
 
 impl Metrics<u128> for ExampleMetrics {
     fn update(&self, _new_version: &Option<u128>, fetch_time: Duration, process_time: Duration) {
-        println!("Update fetch took {}ms and process took {}ms", fetch_time.as_millis(), process_time.as_millis());
+        println!(
+            "Update fetch took {}ms and process took {}ms",
+            fetch_time.as_millis(),
+            process_time.as_millis()
+        );
     }
 
     fn last_successful_update(&self, ts: &DateTime<Utc>) {
